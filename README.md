@@ -1,31 +1,55 @@
-## How to Run so far:
+# Whiteboard to robot paths
 
-Download the repository
-```
-git clone git@github.com:Standlm/Whiteboard_to_svg.git
-cd whiteboard_to_svg
-```
+## Run
 
-Set up the virtual enviroment
-```
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+```sh
+cd ~/Csci/26-grad/fall/robotics/final_local
+source ~/Csci/26-grad/fall/robotics/.venv/bin/activate
+python main.py
 ```
 
-Run main.py and click the four corners of the whiteboard starting with the top left.  type ```c``` to capture an image ```q``` to quit, and ```r``` to reset the corners.
+The `source` command activates the Python environment containing the project's dependencies.
 
+1. Keep the camera fixed and point it at your board or paper.
+2. Click the drawing area's corners: top-left, top-right, bottom-right, bottom-left.
+3. Move your hand out of view and press `s` or `c` to capture, process, and export automatically.
+4. View the traced drawing in the second window. Capture again to update the outputs.
+5. Press `r` to select new corners or `q` to quit.
+
+To choose a camera and set the physical drawing dimensions in meters:
+
+```sh
+python main.py --camera 1 --width-m 0.30 --height-m 0.21
 ```
-python3 main.py
+
+To process an existing image already cropped to the drawing area:
+
+```sh
+python main.py --image drawing.png
 ```
-## Todo nov 4th
 
-Output directly to location coordinates instead of SVG so ros2.0 can access it.
+## Files used
 
-Work on movement detection, goal is to capture image from whiteboard presenter
+| File | Purpose |
+| --- | --- |
+| `main.py` | Entry point: camera preview, corner selection, perspective correction, processing, and preview/SVG export. |
+| `geometry_corection.py` | Imported by `main.py` to extract centerline strokes from the image. |
+| `robot_paths.py` | Imported by `main.py` to convert pixels into meter coordinates and export robot waypoints. |
+| `requirements.txt` | Python dependency list for installing a new environment. |
+| `tests/test_pipeline.py` | Automated tests; not used during normal capture. |
 
-## Next steps
+`scripts/webcam_photo.jpg` is an old saved photo and is not used unless you pass it with `--image`.
 
-### Auto Whiteboard detection
+## Generated files
 
-### increase support for curved lines and strokes rather than just polygons
+Every capture replaces these files in `outputs/`:
+
+| File | Contents |
+| --- | --- |
+| `whiteboard.png` | Straightened board image. |
+| `corrected_lines.png` | Board image with traced strokes shown in red. |
+| `drawing.svg` | Vector version of the traced strokes. |
+| `drawing_paths.json` | Strokes and movement waypoints in meters. |
+| `drawing_waypoints.csv` | Waypoints with stroke ID, pen state, and X/Y/Z coordinates. |
+
+The program generates paths. Running them on a robot requires a separate controller and calibration.

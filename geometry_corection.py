@@ -2,7 +2,7 @@
 import numpy as np
 import cv2
 
-def reconstruct_shapes(image):
+def reconstruct_shapes(image, simplification_factor=0.025):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     gray = cv2.GaussianBlur(gray, (5, 5), 0)
 
@@ -37,12 +37,16 @@ def reconstruct_shapes(image):
 
         polygon = cv2.approxPolyDP(
             contour,
-            0.025 * perimeter,
+            simplification_factor * perimeter,
             True
         )
 
         if len(polygon) < 3:
-            continue
+            polygon = cv2.approxPolyDP(
+                contour,
+                0.05 * perimeter,
+                True
+            )
 
         points = [
             tuple(map(int, p[0]))

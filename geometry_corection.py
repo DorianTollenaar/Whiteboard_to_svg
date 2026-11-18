@@ -30,11 +30,13 @@ def reconstruct_shapes(image, simplification_factor=0.025):
     paths = []
 
     for contour in contours:
-        if cv2.contourArea(contour) < 500:
+        # Skip small contours that are likely noise - lowering this value adds more of the small objects
+        if cv2.contourArea(contour) < 00:
             continue
 
         perimeter = cv2.arcLength(contour, True)
 
+        # Use polygonal approximation to simplify the contour - lowering the simplification factor adds more points to the polygon
         polygon = cv2.approxPolyDP(
             contour,
             simplification_factor * perimeter,

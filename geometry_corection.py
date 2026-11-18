@@ -17,13 +17,13 @@ def reconstruct_shapes(image, simplification_factor=0.025):
     kernel = cv2.getStructuringElement(
         cv2.MORPH_ELLIPSE, (5, 5)
     )
-    binary = cv2.morphologyEx(
-        binary, cv2.MORPH_CLOSE, kernel
-    )
+    # binary = cv2.morphologyEx(
+    #     binary, cv2.MORPH_CLOSE, kernel
+    # )
 
     contours, _ = cv2.findContours(
         binary,
-        cv2.RETR_EXTERNAL,
+        cv2.RETR_TREE,
         cv2.CHAIN_APPROX_SIMPLE
     )
 
